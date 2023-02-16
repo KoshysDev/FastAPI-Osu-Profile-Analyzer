@@ -12,7 +12,7 @@ Analyzes your osu profile and suggest you what map to farm, skill to improve, ba
 Clone the project
 
 ```bash
-  git clone https://link-to-project
+  git clone https://github.com/KoshysDev/FastAPI-Osu-Profile-Analyzer.git
 ```
 
 Go to the project directory
