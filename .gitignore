@@ -24,10 +24,10 @@ database.db
 
 #reactjs
 /frontend/node_modules
-/.pnp
+/frontend/.pnp
 .pnp.js
-/coverage
-/build
+/frontend/coverage
+/frontend/build
 .DS_Store
 .env.local
 .env.development.local
