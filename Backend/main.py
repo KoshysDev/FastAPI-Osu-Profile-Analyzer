@@ -2,6 +2,8 @@ from typing import List
 
 import fastapi as _fastapi
 import fastapi.security as _security
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from fastapi import status
 
 import sqlalchemy.orm as _orm
@@ -80,6 +82,7 @@ async def update_lead(
     await _services.update_lead(lead_id, lead, user, db)
     return {"message", "Updated Successfully"}
 
-@app.get("/")
+@app.get("/api")
 async def root():
-    return {"message": "index page"}
+    json_compatible_item_data = jsonable_encoder("hello world")
+    return JSONResponse(content=json_compatible_item_data)
