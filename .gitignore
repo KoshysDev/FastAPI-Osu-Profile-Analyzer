@@ -23,7 +23,7 @@ archive.zip
 database.db
 
 #reactjs
-/node_modules
+/frontend/node_modules
 /.pnp
 .pnp.js
 /coverage
