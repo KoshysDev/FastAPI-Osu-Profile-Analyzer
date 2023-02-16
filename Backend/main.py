@@ -1,5 +1,6 @@
 import fastapi as _fastapi
 import fastapi.security as _security
+from fastapi import status
 
 import sqlalchemy.orm as _orm
 
@@ -11,7 +12,7 @@ app = _fastapi.FastAPI()
 async def create_user(user: _schemas.UserCreate, db: _orm.Session = _fastapi.Depends(_services.get_db)):
     db_user = await _services.get_user_by_email(user.email, db)
     if db_user:
-        raise _fastapi.HTTPException(status_code=400, detail="Email already in use")
+        raise _fastapi.HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already in use")
 
     return await _services.create_user(user, db)
 
@@ -23,6 +24,10 @@ async def generate_token(
     user = await _services.authenticate_user(form_data.username, form_data.password, db)
 
     if not user:
-        raise _fastapi.HTTPException(status_code=401, detail="Invalid Credentials")
+        raise _fastapi.HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Credentials")
 
     return await _services.create_token(user)
+
+@app.get("/api/users/me", response_model=_schemas.User)
+async def get_user(user: _schemas.User = _fastapi.Depends(_services.get_current_user)):
+    return user
