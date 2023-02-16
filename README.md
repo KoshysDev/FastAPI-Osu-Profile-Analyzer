@@ -29,6 +29,15 @@ Install dependencies
 
 Make sure that you created .env file inside Backend folder and added JWT_SECRET=*replaceme* line inside
 
+Create database
+
+```bash
+  cd .\Backend\
+  python
+  import services
+  services.create_database()
+```
+
 Start the server
 
 ```bash
