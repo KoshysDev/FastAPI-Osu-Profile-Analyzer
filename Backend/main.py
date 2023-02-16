@@ -79,3 +79,7 @@ async def update_lead(
 
     await _services.update_lead(lead_id, lead, user, db)
     return {"message", "Updated Successfully"}
+
+@app.get("/")
+async def root():
+    return {"message": "index page"}
