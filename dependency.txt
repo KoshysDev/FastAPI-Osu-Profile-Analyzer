@@ -1,0 +1,6 @@
+passlib[bcrypt]
+SQLAlchemy
+fastapi[all]
+pyjwt
+python-multipart
+python-dotenv
