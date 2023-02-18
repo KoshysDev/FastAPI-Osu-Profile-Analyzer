@@ -4,13 +4,17 @@ import fastapi as _fastapi
 import fastapi.security as _security
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from fastapi import status
+from fastapi import status, Response
+
+import os
 
 import sqlalchemy.orm as _orm
 
 import services as _services, schemas as _schemas
 
 app = _fastapi.FastAPI()
+
+root = os.path.dirname(os.path.abspath(__file__))
 
 @app.post("/api/users")
 async def create_user(
@@ -82,7 +86,8 @@ async def update_lead(
     await _services.update_lead(lead_id, lead, user, db)
     return {"message", "Updated Successfully"}
 
-@app.get("/api")
-async def root():
-    json_compatible_item_data = jsonable_encoder("hello world")
-    return JSONResponse(content=json_compatible_item_data)
+@app.get("/")
+async def index():
+    with open(os.path.join(root, 'index.html')) as fh:
+        data = fh.read()
+    return Response(content=data, media_type="text/html")
