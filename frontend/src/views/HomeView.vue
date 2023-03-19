@@ -1,9 +1,7 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+import MainPage from '../components/OsuProfileAnalyser.vue'
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+    <MainPage />
 </template>
