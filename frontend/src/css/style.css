@@ -1,7 +1,5 @@
 body {
     font-family: 'Roboto', sans-serif;
-    margin: 0;
-    overflow: hidden;
   }
 
   .landing {
@@ -14,16 +12,21 @@ body {
   }
   
   .logo-text {
-    font-size: 82px;
+    font-family: 'Lato', sans-serif !important; /* Use Roboto font for consistency with Material Design */
+    font-size: 60px; /* Choose a size appropriate for your design */
+    font-weight: 500; /* Use medium font weight for emphasis */
+    letter-spacing: 0.5px; /* Add a bit of letter spacing for readability */
+    text-transform: uppercase; /* Use all-caps for consistency with Material Design */
+    color: #fff; /* Choose a text color that contrasts well with your background */
+    margin-bottom: 10%;
   }
   
   .box {
     margin: 0 auto;
     height: 50px;
     width: 645px;
-    position: relative;
-    padding: 0px 10px;
-    border-radius: 10px;
+    position: center;
+    border-radius: 30px;
   }
   
   .elementsContainer {
@@ -34,15 +37,56 @@ body {
   
   .search {
     border: none;
+    outline: none;
     width: 100%;
     height: 100%;
     padding: 0px 5px;
-    border-radius: 13px;
+    border-radius: 18px;
     font-size: 18px;
     color: #000;
     font-weight: 450;
+    padding-left: 20px;
+    font-family: 'Lato', sans-serif !important;
+  }
+
+  .search::placeholder {
+    position: relative;
+    left: 0px; /* adjust this value to move the placeholder to the right */
+    color: #ccc; /* set the initial color of the placeholder text */
+    transition: color 0.3s ease-out; /* add a transition effect to the color property */
   }
   
+  .search:focus::placeholder {
+    color: transparent; /* set the color of the placeholder text to transparent when the input is focused */
+  }
+
+  .search::-webkit-input-placeholder {
+    position: relative;
+    left: 0px; /* adjust this value to move the placeholder to the right */
+  }
+  
+  .search::-moz-placeholder {
+    position: relative;
+    left: 0px; /* adjust this value to move the placeholder to the right */
+  }
+  
+  .search:-ms-input-placeholder {
+    position: relative;
+    left: 0px; /* adjust this value to move the placeholder to the right */
+  }
+  
+  .search[type="url"] {
+    background-position: right center;
+    background-repeat: no-repeat;
+    padding-right: 30px; /* adjust this value to move the input type sign to the right */
+  }
+  
+  .search[type="url"] {
+    background-position: right center;
+    background-repeat: no-repeat;
+    padding-right: 30px; /* adjust this value to move the input type sign to the right */
+  }
+
   .search:focus {
     outline: none;
   }
@@ -62,4 +106,9 @@ body {
   .search-btn:hover {
     background-position: right;
   }
+
+  * {
+    box-sizing: border-box;
+  }
+  
   

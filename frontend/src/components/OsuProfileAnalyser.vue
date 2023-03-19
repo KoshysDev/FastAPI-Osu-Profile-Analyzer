@@ -1,12 +1,12 @@
 <template>
     <div class="landing">
       <div class="content text-center text-uppercase text-light vertical-align: middle;">
-        <h1 class="logo-text">Osu Profile Analyser</h1>
+        <h1 class="logo-text">Osu! Profile Analyser</h1>
         <div class="box">
           <table class="elementsContainer">
             <tr>
               <td>
-                <input type="url" v-model="profileUrl" placeholder="Osu profile url..." class="search">
+                <input type="url" v-model="profileUrl" placeholder="osu! profile url..." class="search">
               </td>
             </tr>
           </table>
@@ -27,6 +27,7 @@
     },
     methods: {
       analyseProfile() {
+        alert(this.profileUrl);
         // Here you can call your backend API to analyze the profile using the profileUrl
         // You can use the axios library to make the API request
         // Example:
