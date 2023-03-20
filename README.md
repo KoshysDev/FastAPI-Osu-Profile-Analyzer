@@ -29,7 +29,7 @@ Install dependencies
 
 Make sure that you created .env file inside Backend folder and added JWT_SECRET=*replaceme* line inside
 
-Start the server
+Start the backend server
 
 ```bash
   #uvicorn main:app --reload
