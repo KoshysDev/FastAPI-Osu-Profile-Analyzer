@@ -27,6 +27,12 @@ Install dependencies
   pip install dependency.txt
 ```
 
+cd to backend folder
+
+```bash
+  cd .\Backend\
+```
+
 Make sure that you created .env file inside Backend folder and added OSU_APP_SECRET=* 
 and OSU_APP_ID=* from https://osu.ppy.sh/home/account/edit#new-oauth-application
 
@@ -36,6 +42,31 @@ Start the backend server
   #uvicorn main:app --reload
 ```
 
+## Run Frontend Locally
+
+Install node.js
+
+```bash
+  link: https://nodejs.org/en/download
+```
+
+cd to frontend folder in project in new terminal
+
+```bash
+  cd .\Frontend\
+```
+
+install node.js dependencies
+
+```bash
+  npm install axios
+```
+
+run frontend
+
+```bash
+  npm run dev
+```
 
 ## Author
 
