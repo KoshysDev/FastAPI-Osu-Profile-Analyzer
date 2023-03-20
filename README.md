@@ -27,7 +27,8 @@ Install dependencies
   pip install dependency.txt
 ```
 
-Make sure that you created .env file inside Backend folder and added JWT_SECRET=*replaceme* line inside
+Make sure that you created .env file inside Backend folder and added OSU_APP_SECRET=* 
+and OSU_APP_ID=* from https://osu.ppy.sh/home/account/edit#new-oauth-application
 
 Start the backend server
 
