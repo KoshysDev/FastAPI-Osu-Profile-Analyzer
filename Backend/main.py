@@ -1,93 +1,46 @@
-from typing import List
+from fastapi import FastAPI, Request, Query, status
+from fastapi.responses import RedirectResponse
+from starlette.responses import HTMLResponse
+from services import parse_url
 
-import fastapi as _fastapi
-import fastapi.security as _security
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
-from fastapi import status, Response
+from fastapi.middleware.cors import CORSMiddleware
 
-import os
+app = FastAPI()
 
-import sqlalchemy.orm as _orm
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-import services as _services, schemas as _schemas
-
-app = _fastapi.FastAPI()
-
-root = os.path.dirname(os.path.abspath(__file__))
-
-@app.post("/api/users")
-async def create_user(
-    user: _schemas.UserCreate, 
-    db: _orm.Session = _fastapi.Depends(_services.get_db)):
-
-    db_user = await _services.get_user_by_email(user.email, db)
-    if db_user:
-        raise _fastapi.HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already in use")
-
-    #await _services.create_token(user)
-    return await _services.create_user(user, db)
-
-@app.post("/api/token")
-async def generate_token(
-    form_data: _security.OAuth2PasswordRequestForm = _fastapi.Depends(),
-    db: _orm.Session = _fastapi.Depends(_services.get_db),
-):
-    user = await _services.authenticate_user(form_data.username, form_data.password, db)
-
-    if not user:
-        raise _fastapi.HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Credentials")
-
-    return await _services.create_token(user)
-
-@app.get("/api/users/me", response_model=_schemas.User)
-async def get_user(user: _schemas.User = _fastapi.Depends(_services.get_current_user)):
-    return user
-
-@app.post("/api/leads", response_model=_schemas.Lead)
-async def create_lead(
-    lead: _schemas.LeadCreate, 
-    user: _schemas.User=_fastapi.Depends(_services.get_current_user), 
-    db: _orm.Session = _fastapi.Depends(_services.get_db)):
-
-    return await _services.create_lead(user=user, db=db, lead=lead)
-
-@app.get("/api/leads", response_model=List[_schemas.Lead])
-async def get_leads(
-    user: _schemas.User=_fastapi.Depends(_services.get_current_user), 
-    db: _orm.Session = _fastapi.Depends(_services.get_db)):
-
-    return await _services.get_leads(user=user, db=db)
-
-@app.get("/api/leads/{lead_id}", status_code=status.HTTP_200_OK)
-async def get_lead(
-    lead_id: int,
-    user: _schemas.User=_fastapi.Depends(_services.get_current_user), 
-    db: _orm.Session = _fastapi.Depends(_services.get_db)):
-
-    return await _services.get_lead(lead_id, user, db)
-
-@app.delete("/api/leads/{lead_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_lead(
-    lead_id: int,
-    user: _schemas.User=_fastapi.Depends(_services.get_current_user), 
-    db: _orm.Session = _fastapi.Depends(_services.get_db)):
-
-    await _services.delete_lead(lead_id, user, db)
-    return {"message", "Deleted Successfully"}
-
-@app.put("/api/leads/{lead_id}", status_code=status.HTTP_200_OK)
-async def update_lead(
-    lead_id: int,
-    lead: _schemas.LeadCreate,
-    user: _schemas.User=_fastapi.Depends(_services.get_current_user), 
-    db: _orm.Session = _fastapi.Depends(_services.get_db)):
-
-    await _services.update_lead(lead_id, lead, user, db)
-    return {"message", "Updated Successfully"}
-
+# Endpoint to redirect to frontend page
 @app.get("/")
-async def index():
-    with open(os.path.join(root, 'index.html')) as fh:
-        data = fh.read()
-    return Response(content=data, media_type="text/html")
+async def redirect_to_frontend(request: Request):
+    frontend_url = "http://localhost:5173/"
+    return RedirectResponse(url=frontend_url)
+
+@app.get("/404", response_class=HTMLResponse)
+async def not_found(request: Request):
+    return """
+        <html>
+            <head>
+                <title>404 Not Found</title>
+            </head>
+            <body>
+                <h1>404 Not Found</h1>
+                <p>The requested resource could not be found.</p>
+            </body>
+        </html>
+    """
+
+@app.get("/{catchall:path}")
+async def not_found(request: Request, catchall: str) -> HTMLResponse:
+    return RedirectResponse("http://127.0.0.1:8000/404")
+
+
+@app.get("/parse_url")
+async def parse_url_endpoint(url: str = Query(...)):
+    parsed_data = parse_url(url)
+    return parsed_data

@@ -26,19 +26,15 @@
       };
     },
     methods: {
-      analyseProfile() {
-        alert(this.profileUrl);
-        // Here you can call your backend API to analyze the profile using the profileUrl
-        // You can use the axios library to make the API request
-        // Example:
-        // axios.post('/api/analyse-profile', { profileUrl: this.profileUrl })
-        //   .then(response => {
-        //     // Handle the response from the API
-        //   })
-        //   .catch(error => {
-        //     // Handle the error from the API
-        //   });
-      },
+        async analyseProfile() {
+    const response = await fetch(`http://localhost:8000/parse_url?url=${this.profileUrl}`);
+    const data = await response.json();
+    if (data && data.name) {
+      alert(`User name: ${data.name}`);
+    } else {
+      alert('Could not parse user name from the provided URL');
+    }
+  },
     },
   };
   </script>
