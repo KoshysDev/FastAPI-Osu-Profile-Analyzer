@@ -1,11 +1,14 @@
 from fastapi import FastAPI, Request, Query, status
 from fastapi.responses import RedirectResponse
 from starlette.responses import HTMLResponse
-from services import parse_url
+import httpx, os, fileinput
+
+from dotenv import load_dotenv
 
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+load_dotenv()
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,6 +24,7 @@ async def redirect_to_frontend(request: Request):
     frontend_url = "http://localhost:5173/"
     return RedirectResponse(url=frontend_url)
 
+# 404 page Enppoint for backend side
 @app.get("/404", response_class=HTMLResponse)
 async def not_found(request: Request):
     return """
@@ -35,12 +39,71 @@ async def not_found(request: Request):
         </html>
     """
 
+@app.post("/api/authenticate")
+async def authenticate():
+    app_id = os.getenv("OSU_APP_ID")
+    app_secret = os.getenv("OSU_APP_SECRET")
+    url = "https://osu.ppy.sh/oauth/token"
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    data = {"client_id": app_id, "client_secret": app_secret, "grant_type": "client_credentials", "scope": "public"}
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url, headers=headers, json=data)
+
+    if response.status_code != 200:
+        return {"error": "Failed to authenticate"}
+
+    # Replace access token in .env file
+    access_token = response.json()["access_token"]
+    with fileinput.FileInput(".env", inplace=True) as file:
+        for line in file:
+            if line.startswith("OSU_ACCESS_KEY="):
+                line = f"OSU_ACCESS_KEY={access_token}\n"
+            print(line, end='')
+
+    return {"success": "Authenticated successfully"}
+
+# Endpoint to return the user profile data
+@app.get("/api/user/{user_id}")
+async def get_user_profile(user_id: str):
+    access_token = os.getenv("OSU_ACCESS_KEY")
+
+    # If access_token is None, return an error
+    if access_token is None:
+        return {"error": "Access token not available"}
+
+    # Make API call to get user profile data
+    url = f"https://osu.ppy.sh/api/v2/users/{user_id}/osu"
+    headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json", "Content-Type": "application/json"}
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+
+    return response.json()
+
+# Validate token method
+@app.get("/api/validate_token")
+async def validate_token():
+    access_token = os.getenv("OSU_ACCESS_KEY")
+    
+    if not access_token:
+        # Call authenticate endpoint to get a new access token
+        await authenticate()
+        access_token = os.getenv("OSU_ACCESS_KEY")
+    
+    # Make a test API call to verify if the access token is still valid
+    url = "https://osu.ppy.sh/api/v2/me"
+    headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json", "Content-Type": "application/json"}
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+
+    if response.status_code != 200:
+        # Call authenticate endpoint to get a new access token
+        await authenticate()
+    
+    return {"status": "success"}
+
+# if no endpoint found for url on backend side - redirect to 404 page
 @app.get("/{catchall:path}")
 async def not_found(request: Request, catchall: str) -> HTMLResponse:
     return RedirectResponse("http://127.0.0.1:8000/404")
-
-
-@app.get("/parse_url")
-async def parse_url_endpoint(url: str = Query(...)):
-    parsed_data = parse_url(url)
-    return parsed_data

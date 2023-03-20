@@ -19,12 +19,25 @@
   </template>
   
   <script>
+  import axios from 'axios'
+
   export default {
     data() {
       return {
         profileUrl: "",
       };
     },
+    mounted() {
+    axios.get('http://localhost:8000/api/validate_token')
+      .then(response => {
+        // handle successful response
+        console.log(response.data)
+      })
+      .catch(error => {
+        // handle error
+        console.log(error)
+      })
+  },
     methods: {
         async analyseProfile() {
     const response = await fetch(`http://localhost:8000/parse_url?url=${this.profileUrl}`);
