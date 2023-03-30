@@ -1,10 +1,12 @@
 body {
     font-family: 'Roboto', sans-serif;
+    overflow-x: hidden;
   }
 
   .landing {
     background: linear-gradient(50deg, #4B136D 10%,#2A60D4 80%);
     display: flex;
+    flex-direction: column;
     height: 100vh;
     width: 100vw;
     align-items: center;
@@ -12,8 +14,8 @@ body {
   }
   
   .logo-text {
-    font-family: 'Lato', sans-serif !important; /* Use Roboto font for consistency with Material Design */
-    font-size: 60px; /* Choose a size appropriate for your design */
+    font-family: 'Comfortaa', cursive !important; /* Use Roboto font for consistency with Material Design */
+    font-size: 80px; /* Choose a size appropriate for your design */
     font-weight: 500; /* Use medium font weight for emphasis */
     letter-spacing: 0.5px; /* Add a bit of letter spacing for readability */
     text-transform: uppercase; /* Use all-caps for consistency with Material Design */
@@ -22,6 +24,7 @@ body {
   }
   
   .box {
+    display: flex;
     margin: 0 auto;
     height: 50px;
     width: 645px;
@@ -80,12 +83,6 @@ body {
     background-repeat: no-repeat;
     padding-right: 30px; /* adjust this value to move the input type sign to the right */
   }
-  
-  .search[type="url"] {
-    background-position: right center;
-    background-repeat: no-repeat;
-    padding-right: 30px; /* adjust this value to move the input type sign to the right */
-  }
 
   .search:focus {
     outline: none;
@@ -110,5 +107,10 @@ body {
   * {
     box-sizing: border-box;
   }
-  
+
+  @-moz-document url-prefix() {
+    .search {
+      height: 50px;
+    }
+  }
   

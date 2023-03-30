@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request, Query, status
 from fastapi.responses import RedirectResponse
+from typing import Optional
 from starlette.responses import HTMLResponse
 import httpx, os, fileinput
 
@@ -23,21 +24,6 @@ app.add_middleware(
 async def redirect_to_frontend(request: Request):
     frontend_url = "http://localhost:5173/"
     return RedirectResponse(url=frontend_url)
-
-# 404 page Enppoint for backend side
-@app.get("/404", response_class=HTMLResponse)
-async def not_found(request: Request):
-    return """
-        <html>
-            <head>
-                <title>404 Not Found</title>
-            </head>
-            <body>
-                <h1>404 Not Found</h1>
-                <p>The requested resource could not be found.</p>
-            </body>
-        </html>
-    """
 
 @app.post("/api/authenticate")
 async def authenticate():
@@ -81,6 +67,30 @@ async def get_user_profile(user_id: str):
 
     return response.json()
 
+# Endpoint to return the user scores
+@app.get("/api/user/{user_id}/scores")
+async def get_user_scores(user_id: int, mode: str = "osu", limit: int = 100, offset: int = 0, include_fails: int = 0):
+    access_token = os.getenv("OSU_ACCESS_KEY")
+    if access_token is None:
+        return {"error": "Access token not available"}
+
+    url = f"https://osu.ppy.sh/api/v2/users/{user_id}/scores/best"
+    headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json", "Content-Type": "application/json"}
+
+    params = {
+        "include_fails": include_fails,
+        "mode": mode,
+        "limit": limit,
+        "offset": offset,
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers, params=params)
+
+    return response.json()
+
+
+
 # Validate token method
 @app.get("/api/validate_token")
 async def validate_token():
@@ -102,6 +112,21 @@ async def validate_token():
         await authenticate()
     
     return {"status": "success"}
+
+# 404 page Enppoint for backend side
+@app.get("/404", response_class=HTMLResponse)
+async def not_found(request: Request):
+    return """
+        <html>
+            <head>
+                <title>404 Not Found</title>
+            </head>
+            <body>
+                <h1>404 Not Found</h1>
+                <p>The requested resource could not be found.</p>
+            </body>
+        </html>
+    """
 
 # if no endpoint found for url on backend side - redirect to 404 page
 @app.get("/{catchall:path}")
